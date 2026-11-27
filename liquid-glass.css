@@ -1,0 +1,79 @@
+/* ==========================================================
+   Liquid Glass (estilo iOS) — recuadro de cristal
+   Uso: <div class="glass">…</div>  +  liquid-glass.js
+   ========================================================== */
+
+.glass {
+  --glass-radius: 32px;
+  --glass-tint: rgba(255, 255, 255, 0.08);
+  --glass-blur: 3px;          /* solo para el modo de respaldo */
+  --glass-saturate: 180%;
+
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--glass-radius);
+  background: var(--glass-tint);
+  color: #fff;
+
+  /* Respaldo (Safari / Firefox): desenfoque clásico de iOS */
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 4)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(calc(var(--glass-blur) * 4)) saturate(var(--glass-saturate));
+
+  /* Brillo interior + sombra de elevación */
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.18),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.25),
+    inset 0 0 24px rgba(255, 255, 255, 0.06),
+    0 10px 30px -6px rgba(0, 0, 0, 0.35),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Refracción real (Chromium): la aplica liquid-glass.js con un filtro SVG */
+.glass.glass--refract {
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+}
+
+/* Reflejo especular en el borde (borde degradado enmascarado) */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background:
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.15) 28%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.12) 72%,
+      rgba(255, 255, 255, 0.6) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Brillo superior suave, como la luz que cae sobre el cristal */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 60% at 30% -10%, rgba(255, 255, 255, 0.22), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass > * { position: relative; z-index: 2; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass.glass--refract {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(40, 40, 48, 0.92);
+  }
+}
