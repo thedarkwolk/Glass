@@ -8,12 +8,14 @@
   --glass-tint: rgba(255, 255, 255, 0.08);
   --glass-blur: 3px;          /* solo para el modo de respaldo */
   --glass-saturate: 180%;
+  --glass-glow: rgba(255, 255, 255, 0.22);
 
   position: relative;
   isolation: isolate;
   border-radius: var(--glass-radius);
   background: var(--glass-tint);
   color: #fff;
+  transition: background-color 1s ease;
 
   /* Respaldo (Safari / Firefox): desenfoque clásico de iOS */
   -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 4)) saturate(var(--glass-saturate));
@@ -63,7 +65,8 @@
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(120% 60% at 30% -10%, rgba(255, 255, 255, 0.22), transparent 60%);
+    radial-gradient(120% 60% at 30% -10%, var(--glass-glow), transparent 60%);
+  transition: background 1s ease;
   pointer-events: none;
   z-index: 0;
 }

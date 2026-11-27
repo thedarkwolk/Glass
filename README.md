@@ -26,6 +26,30 @@ Efecto de cristal para un recuadro, al estilo de iOS. Incluye la refracción de 
 
 Variables CSS personalizables: `--glass-radius`, `--glass-tint`, `--glass-blur` y `--glass-saturate`.
 
+## Estaciones
+
+La demo incluye efectos para las cuatro estaciones (`seasons.js` + `seasons.css`):
+
+![estaciones](preview-seasons.jpg)
+
+| Estación | Partículas | Sobre el cristal |
+|---|---|---|
+| Primavera | Pétalos de cerezo que giran en 3D | Gotas de lluvia con rastro |
+| Verano | Motas de luz que suben y titilan | Destello de sol que se desplaza |
+| Otoño | Hojas que caen con ráfagas de viento | Una hoja posada en la esquina |
+| Invierno | Nieve con varias profundidades | Escarcha en los bordes, nieve acumulada encima y cristal más esmerilado |
+
+- Las partículas se pintan **detrás** del cristal, así que se ven refractadas a través de él, y unas pocas, grandes y desenfocadas, **delante**, para dar profundidad.
+- El puntero aparta las partículas cercanas.
+- Al cambiar de estación cambian la paleta del fondo (transición suave con `@property`), el tinte y el brillo del cristal, los parámetros de refracción y el contenido de la tarjeta.
+- La estación inicial se toma de la fecha (hemisferio norte) o de `?season=spring|summer|autumn|winter`, y se recuerda la última elegida.
+- Con `prefers-reduced-motion` se muestra un fotograma estático.
+
+```js
+const fx = new SeasonFX(canvasDetras, canvasDelante);
+fx.set("winter");               // o SeasonFX.fromDate()
+```
+
 ## Cómo funciona
 
 - **CSS (`liquid-glass.css`)**: tinte translúcido, sombras internas, borde especular con degradado enmascarado y brillo superior. Por sí solo da el "frosted glass" clásico de iOS.

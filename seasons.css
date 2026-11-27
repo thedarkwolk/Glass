@@ -1,0 +1,129 @@
+/* ==========================================================
+   Estaciones: paleta del fondo, tinte del cristal y detalles
+   sobre el recuadro (gotas, reflejo de sol, hoja, escarcha y nieve).
+   ========================================================== */
+
+@property --bg { syntax: "<color>"; inherits: true; initial-value: #14121f; }
+@property --c1 { syntax: "<color>"; inherits: true; initial-value: #ff5e8a; }
+@property --c2 { syntax: "<color>"; inherits: true; initial-value: #5b8cff; }
+@property --c3 { syntax: "<color>"; inherits: true; initial-value: #ffb347; }
+@property --c4 { syntax: "<color>"; inherits: true; initial-value: #3ce0b0; }
+
+body {
+  transition: --bg 1.4s ease, --c1 1.4s ease, --c2 1.4s ease, --c3 1.4s ease, --c4 1.4s ease;
+}
+
+body[data-season="spring"] {
+  --bg: #1f1626; --c1: #ff8fb1; --c2: #7cc6ff; --c3: #ffc8dd; --c4: #8fdc7a;
+  --season-tint: rgba(255, 200, 220, 0.10); --season-glow: rgba(255, 228, 238, 0.30);
+}
+body[data-season="summer"] {
+  --bg: #1f1306; --c1: #ff7a1a; --c2: #ffc21a; --c3: #ff4f5e; --c4: #1fc8d6;
+  --season-tint: rgba(255, 200, 120, 0.08); --season-glow: rgba(255, 226, 160, 0.50);
+}
+body[data-season="autumn"] {
+  --bg: #170d08; --c1: #e2582b; --c2: #8e3b1f; --c3: #f3a73b; --c4: #6b4a2b;
+  --season-tint: rgba(70, 30, 10, 0.18); --season-glow: rgba(255, 196, 140, 0.24);
+}
+body[data-season="winter"] {
+  --bg: #0a1120; --c1: #5f97ff; --c2: #a9cbff; --c3: #2f4fc7; --c4: #d4e6ff;
+  --season-tint: rgba(220, 235, 255, 0.16); --season-glow: rgba(255, 255, 255, 0.38);
+}
+
+body[data-season] .card,
+body[data-season] .pill {
+  --glass-tint: var(--season-tint);
+  --glass-glow: var(--season-glow);
+}
+
+/* ---------- Capas de partículas ---------- */
+.fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fx-front { z-index: 20; filter: blur(2.5px); }   /* desenfoque en GPU: efecto de profundidad */
+
+/* ---------- Detalles sobre el cristal ---------- */
+.glass > .decor {
+  position: absolute; inset: 0; z-index: 1;
+  border-radius: inherit; overflow: hidden;
+  pointer-events: none;
+}
+.decor > * { position: absolute; opacity: 0; transition: opacity 1s ease; }
+
+/* Primavera: gotas de lluvia sobre el cristal */
+.drops { inset: 0; }
+.drop {
+  position: absolute;
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,.95) 0 10%, rgba(255,255,255,0) 22%),
+    radial-gradient(circle at 60% 75%, rgba(255,255,255,.35) 0 14%, rgba(255,255,255,0) 30%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.06) 40%, rgba(0,0,0,.18) 100%);
+  box-shadow: 0 1.5px 2px rgba(0,0,0,.25), inset 0 -1px 1px rgba(255,255,255,.25);
+}
+.drop.trail::after {          /* rastro que deja la gota al resbalar */
+  content: ""; position: absolute; left: 30%; right: 30%; bottom: 90%;
+  height: var(--trail, 30px);
+  border-radius: 99px;
+  background: linear-gradient(to top, rgba(255,255,255,.18), rgba(255,255,255,0));
+}
+body[data-season="spring"] .drops { opacity: 1; }
+
+/* Verano: destello del sol cruzando el cristal */
+.flare {
+  inset: -20%;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(255,246,214,.75) 0 2%, rgba(255,214,120,.35) 7%, transparent 22%),
+    linear-gradient(115deg, transparent 38%, rgba(255,236,190,.16) 44%, transparent 50%,
+                    transparent 56%, rgba(255,236,190,.10) 59%, transparent 63%);
+  mix-blend-mode: screen;
+  animation: flare 9s ease-in-out infinite alternate;
+}
+@keyframes flare { from { transform: translateX(-4%); } to { transform: translateX(4%); } }
+body[data-season="summer"] .flare { opacity: 1; }
+
+/* Invierno: escarcha en los bordes */
+.frost {
+  inset: 0;
+  background:
+    radial-gradient(130% 110% at 50% 45%, transparent 52%, rgba(235,244,255,.38) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-mask: radial-gradient(120% 100% at 50% 45%, transparent 45%, #000 95%);
+          mask: radial-gradient(120% 100% at 50% 45%, transparent 45%, #000 95%);
+  mix-blend-mode: screen;
+}
+body[data-season="winter"] .frost { opacity: 1; }
+
+/* Invierno: nieve acumulada encima del recuadro */
+.glass > .snowcap {
+  position: absolute; z-index: 3;
+  left: 16px; right: 16px; top: -9px; height: 16px;
+  transform: scaleY(0); transform-origin: 50% 100%;
+  transition: transform 1.4s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgba(20,40,90,.25));
+}
+.snowcap svg { width: 100%; height: 100%; display: block; }
+body[data-season="winter"] .snowcap { transform: scaleY(1); }
+
+/* Otoño: una hoja posada en la esquina */
+.glass > .resting-leaf {
+  position: absolute; z-index: 3;
+  right: 22px; top: -14px; width: 34px; height: 34px;
+  transform: translateY(-30px) rotate(-60deg); opacity: 0;
+  transition: transform 1.2s cubic-bezier(.3,1.4,.5,1), opacity .6s ease;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,.3));
+}
+body[data-season="autumn"] .resting-leaf { transform: rotate(28deg); opacity: 1; transition-delay: .4s; }
+
+/* Pestañas de estaciones */
+.pill button { display: inline-flex; align-items: center; gap: 6px; }
+.pill button svg { width: 15px; height: 15px; flex: none; }
+@media (max-width: 420px) {
+  .pill button { padding: 10px 11px; font-size: 12px; }
+  .pill button svg { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flare { animation: none; }
+  body { transition: none; }
+}
